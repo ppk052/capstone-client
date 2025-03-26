@@ -21,5 +21,4 @@ while True:
 	print("=====")
 	print("POT Value: %d" % pot_value)
 	time.sleep(delay)
-[출처] Raspberry Pi :: 라즈베리 파이 SPI 통신, MCP3008 IC|작성자 토찌
 
