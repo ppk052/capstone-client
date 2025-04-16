@@ -223,7 +223,7 @@ def read_spi_adc(adcChannel):
 
 #메세지받을때
 def on_message(ws,message):
-    global plant_id, sensor_thread, appropriate_temperature, appropriate_moisture, appropriate_light, pump_auto, LED_auto, fan_auto, led_on_time, pump_on_time, fan_on_time
+    global plant_id, sensor_thread, appropriate_temperature, appropriate_moisture, appropriate_light, pump_auto, LED_auto, fan_auto, led_on_time, pump_on_time, fan_on_time, led_on, fan_on, pump_on
     try:
         data = json.loads(message)
         print("메세지수신 : ", message)
@@ -246,9 +246,11 @@ def on_message(ws,message):
                 if data['switch'] == True:
                     GPIO.output(led_switch,1)
                     led_on_time = time.time()
+                    led_on = True
                     print("LED ON")
                 else:
                     GPIO.output(led_switch,0)
+                    led_on=False
                     print("LED OFF")
             #펌프수동제어
             elif data['type'] ==2:
@@ -256,19 +258,23 @@ def on_message(ws,message):
                     GPIO.output(pump_switch1,1)
                     GPIO.output(pump_switch2,0)
                     pump_on_time = time.time()
+                    pump_on = True
                     print("펌프 ON")
                 else:
                     GPIO.output(pump_switch1,0)
                     GPIO.output(pump_switch2,0)
+                    pump_on = False
                     print("펌프 OFF")
             #fan수동제어
             elif data['type']==4:
                 if data['switch'] == True:
                     GPIO.output(fan_switch,1)
                     fan_on_time=time.time()
+                    fan_on = True
                     print("fan ON")
                 else:
                     GPIO.output(fan_switch,0)
+                    fan_on = False
                     print("fan Off")
             #자동모드제어
             elif data['type']==5:
