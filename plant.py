@@ -182,7 +182,7 @@ def read_and_send_sensor_data(frequency, plant_id):
                             }
                             send_message(server, message)
                 elif pump_auto:
-                    if current_land_moisture > appropriate_moisture:
+                    if current_land_moisture < appropriate_moisture:
                             GPIO.output(pump_switch1,1)
                             GPIO.output(pump_switch2,0)
                             pump_on = True
