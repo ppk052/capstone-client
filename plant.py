@@ -284,6 +284,9 @@ def on_message(ws,message):
                         
             #plantid를 보내서 식별완료
             elif data['type'] == 3:
+                appropriate_moisture = data['moisture']
+                appropriate_temperature = data['temperature']
+                appropriate_light = data['light']
                 #식물id식별왼료했으니까 센서데이터 받기 시작            
                 if sensor_thread is None or not sensor_thread.is_alive():          
                     sensor_thread = threading.Thread(target = read_and_send_sensor_data, args=(frequency, plant_id))
