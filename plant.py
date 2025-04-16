@@ -27,7 +27,7 @@ fan_on = False
 max_land_moisture_value = 1020
 min_land_moisture_value = 330
 pump_turn_time = 10
-fan_turn_time = 60
+fan_turn_time = 10
 led_turn_time = 10
 led_on_time = 0
 fan_on_time = 0
@@ -121,6 +121,19 @@ def read_and_send_sensor_data(frequency, plant_id):
                         send_message(server, message)
 
                 #팬
+                print("팬켜져있는가")
+                print(fan_on)
+                print("팬자동")
+                print(fan_auto)
+                print("경과시간")
+                print(current_time - fan_on_time)
+                print("켜야되나")
+                print(current_temperature > appropriate_temperature)
+                print("현재온도")
+                print(current_temperature)
+                print("적정온도")
+                print(appropriate_temperature)
+                
                 if fan_on:
                     if fan_auto and current_time - fan_on_time > fan_turn_time:
                         GPIO.output(fan_switch,0)
@@ -288,7 +301,7 @@ def on_message(ws,message):
                 LED_auto = data['ledAuto']
                 pump_auto = data['pumpAuto']
                 fan_auto = data['fanAuto']
-                #식물id식별왼료했으니까 센서데이터 받기 시작            
+                #식물id식별완완료했으니까 센서데이터 받기 시작            
                 if sensor_thread is None or not sensor_thread.is_alive():          
                     sensor_thread = threading.Thread(target = read_and_send_sensor_data, args=(frequency, plant_id))
                     sensor_thread.daemon = True
