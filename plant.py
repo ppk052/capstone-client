@@ -21,6 +21,9 @@ appropriate_light = 0.0
 pump_auto = True
 LED_auto = True
 fan_auto = True
+pump_on = False
+led_on = False
+fan_on = False
 max_land_moisture_value = 1020
 min_land_moisture_value = 330
 pump_turn_time = 10
@@ -29,7 +32,7 @@ led_turn_time = 10
 
 # 주기적으로 센서데이터 읽고 데이터값 보내는 함수
 def read_and_send_sensor_data(frequency, plant_id):
-    global pump_auto, LED_auto, fan_auto, appropriate_light, appropriate_moisture, appropriate_temperature, max_land_moisture_value, min_land_moisture_value, pump_turn_time, fan_turn_time, pump_auto, LED_auto, fan_auto, led_turn_time
+    global pump_auto, LED_auto, fan_auto, appropriate_light, appropriate_moisture, appropriate_temperature, max_land_moisture_value, min_land_moisture_value, pump_turn_time, fan_turn_time, pump_auto, LED_auto, fan_auto, led_turn_time, pump_on, led_on, fan_on
     
     last_sent_time = time.time()  # 마지막 전송 시간 기록
     land_moisture_list = []
@@ -82,8 +85,9 @@ def read_and_send_sensor_data(frequency, plant_id):
                 
                 #라이트
                 #라이트가 자동으로 켜지고 일정시간이 지나면 끄고나서 다시 LED 제어
-                if led_on_time and current_time - led_on_time>led_turn_time:
+                if not led_on or led_on_time and current_time - led_on_time>led_turn_time:
                     GPIO.output(led_switch,0)
+                    led_on = false
                     message = {
                         "type": 3,
                         "id": plant_id,
@@ -93,6 +97,7 @@ def read_and_send_sensor_data(frequency, plant_id):
                     send_message(server, message)    
                     if LED_auto and 6<local_time.tm_hour<20 and current_light < appropriate_light:
                         GPIO.output(led_switch,1)
+                        led_on = True
                         led_on_time = time.time()
                         message = {
                         "type": 3,
@@ -103,8 +108,9 @@ def read_and_send_sensor_data(frequency, plant_id):
                         send_message(server, message)
                         
                 #팬
-                if current_time - fan_on_time > fan_turn_time:
+                if not fan_on or current_time - fan_on_time > fan_turn_time:
                     GPIO.output(fan_switch,0)
+                    fan_on = False
                     message = {
                         "type": 3,
                         "id": plant_id,
@@ -114,6 +120,7 @@ def read_and_send_sensor_data(frequency, plant_id):
                     send_message(server, message)
                     if fan_auto and current_temperature > appropriate_temperature:
                         GPIO.output(fan_switch,1)
+                        fan_on = True
                         fan_on_time = time.time()
                         message = {
                         "type": 3,
@@ -124,9 +131,10 @@ def read_and_send_sensor_data(frequency, plant_id):
                         send_message(server, message)
                 
                 #펌프
-                if current_time - pump_on_time>pump_turn_time:
+                if not pump_on or current_time - pump_on_time>pump_turn_time:
                     GPIO.output(pump_switch1,0)
                     GPIO.output(pump_switch2,0)
+                    pump_on = False
                     message = {
                         "type": 3,
                         "id": plant_id,
@@ -137,6 +145,7 @@ def read_and_send_sensor_data(frequency, plant_id):
                     if pump_auto and current_land_moisture<appropriate_moisture:
                         GPIO.output(pump_switch1,1)
                         GPIO.output(pump_switch2,0)
+                        pump_on = True
                         pump_on_time = time.time()
                         message = {
                         "type": 3,
@@ -225,17 +234,23 @@ def on_message(ws,message):
                 if data['switch'] == True:
                     if data['device'] == 'pump':
                         pump_auto = True
+                        print(pump_auto)
                     elif data['device'] == 'LED':
                         LED_auto = True
+                        print(LED_auto)
                     elif data['device'] == 'fan':
                         fan_auto = True
+                        print(fan_auto)
                 elif data['switch'] == False:
                     if data['device'] == 'pump':
                         pump_auto = False
+                        print(pump_auto)
                     elif data['device'] == 'LED':
                         LED_auto = False
+                        print(LED_auto)
                     elif data['device'] == 'fan':
                         fan_auto = False
+                        print(fan_auto)
                         
             #plantid를 보내서 식별완료
             elif data['type'] == 3:
