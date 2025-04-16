@@ -29,9 +29,9 @@ min_land_moisture_value = 330
 pump_turn_time = 10
 fan_turn_time = 60
 led_turn_time = 10
-led_on_time = time.time()
-fan_on_time = time.time()
-pump_on_time = time.time()
+led_on_time = 0
+fan_on_time = 0
+pump_on_time = 0
 
 # 주기적으로 센서데이터 읽고 데이터값 보내는 함수
 def read_and_send_sensor_data(frequency, plant_id):
@@ -79,9 +79,6 @@ def read_and_send_sensor_data(frequency, plant_id):
 
                 # 주기적으로 5초마다 센서 데이터를 전송
                 current_time = time.time()
-                led_on_time = time.time()
-                fan_on_time = time.time()
-                pump_on_time = time.time()
 
                 #제어시작
                 local_time = time.localtime(current_time)
