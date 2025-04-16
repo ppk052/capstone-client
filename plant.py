@@ -285,6 +285,9 @@ def on_message(ws,message):
                 appropriate_moisture = data['moisture']
                 appropriate_temperature = data['temperature']
                 appropriate_light = data['light']
+                LED_auto = data['ledAuto']
+                pump_auto = data['pumpAuto']
+                fan_auto = data['fanAuto']
                 #식물id식별왼료했으니까 센서데이터 받기 시작            
                 if sensor_thread is None or not sensor_thread.is_alive():          
                     sensor_thread = threading.Thread(target = read_and_send_sensor_data, args=(frequency, plant_id))
