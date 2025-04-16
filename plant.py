@@ -85,9 +85,9 @@ def read_and_send_sensor_data(frequency, plant_id):
                 
                 #라이트
                 #라이트가 자동으로 켜지고 일정시간이 지나면 끄고나서 다시 LED 제어
-                if not led_on or led_on_time and current_time - led_on_time>led_turn_time:
+                if not led_on or current_time - led_on_time>led_turn_time:
                     GPIO.output(led_switch,0)
-                    led_on = false
+                    led_on = False
                     message = {
                         "type": 3,
                         "id": plant_id,
