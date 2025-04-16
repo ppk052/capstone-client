@@ -96,6 +96,10 @@ def read_and_send_sensor_data(frequency, plant_id):
                 print(local_time.tm_hour)
                 print("LED켜야되나?")
                 print(current_light<appropriate_light)
+                print("현재밝기")
+                print(current_light)
+                print("적정밝기")
+                print(appropriate_light)
                 if led_on:
                     if LED_auto and current_time - led_on_time>led_turn_time:
                         GPIO.output(led_switch,0)
