@@ -41,7 +41,6 @@ def read_and_send_sensor_data(frequency, plant_id):
             data_byte = uart.readline()
             if data_byte:
                 data = data_byte.decode('utf-8').strip()
-                print(data)
                 data_values = data.split(',')[2:]
 
                 if len(data_values) < 3:
@@ -52,7 +51,6 @@ def read_and_send_sensor_data(frequency, plant_id):
                 current_moisture = float(data_values[1])
                 current_temperature = float(data_values[0])
                 current_light = float(data_values[2])
-                print(current_temperature)
 
                 # 토양 수분 센서 데이터 읽기
                 current_land_moisture = read_spi_adc(0)
@@ -63,9 +61,11 @@ def read_and_send_sensor_data(frequency, plant_id):
                     del land_moisture_list[0]
                     del temperature_list[0]
                     del light_list[0]
-                if 0<current_temperature<40:
+                if not 0<current_temperature<40:
+                    print("센서데이터보정")
                     result =  sum(temperature_list)
                     current_temperature = result/4
+                    print(current_temperature)
                 land_moisture_list.append(current_land_moisture)
                 temperature_list.append(current_temperature)
                 light_list.append(current_light)
