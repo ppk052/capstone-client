@@ -152,7 +152,7 @@ def read_and_send_sensor_data(frequency, plant_id):
                             message = {
                             "type": 3,
                             "id": plant_id,
-                            "name": 'LED',
+                            "name": 'fan',
                             "newState": True
                             }
                             send_message(server, message)
@@ -164,35 +164,49 @@ def read_and_send_sensor_data(frequency, plant_id):
                             message = {
                             "type": 3,
                             "id": plant_id,
-                            "name": 'LED',
+                            "name": 'fan',
                             "newState": True
                             }
                             send_message(server, message)
 
                 #펌프
-                if not pump_on or current_time - pump_on_time>pump_turn_time:
-                    GPIO.output(pump_switch1,0)
-                    GPIO.output(pump_switch2,0)
-                    pump_on = False
-                    message = {
-                        "type": 3,
-                        "id": plant_id,
-                        "name": 'pump',
-                        "newState": False
-                        }
-                    send_message(server, message)
-                    if pump_auto and current_land_moisture<appropriate_moisture:
-                        GPIO.output(pump_switch1,1)
+                if pump_on:
+                    if pump_auto and current_time - pump_on_time > pump_turn_time:
+                        GPIO.output(pump_switch1,0)
                         GPIO.output(pump_switch2,0)
-                        pump_on = True
-                        pump_on_time = time.time()
+                        pump_on = False
                         message = {
-                        "type": 3,
-                        "id": plant_id,
-                        "name": 'LED',
-                        "newState": True
-                        }
+                            "type": 3,
+                            "id": plant_id,
+                            "name": 'pump',
+                            "newState": False
+                            }
                         send_message(server, message)
+                        if current_land_moisture > appropriate_moisture:
+                            GPIO.output(pump_switch1,1)
+                            GPIO.output(pump_switch2,0)
+                            pump_on = True
+                            pump_on_time = time.time()
+                            message = {
+                            "type": 3,
+                            "id": plant_id,
+                            "name": 'pump',
+                            "newState": True
+                            }
+                            send_message(server, message)
+                elif pump_auto:
+                    if current_land_moisture > appropriate_moisture:
+                            GPIO.output(pump_switch1,1)
+                            GPIO.output(pump_switch2,0)
+                            pump_on = True
+                            pump_on_time = time.time()
+                            message = {
+                            "type": 3,
+                            "id": plant_id,
+                            "name": 'pump',
+                            "newState": True
+                            }
+                            send_message(server, message)
 
                 if current_time - last_sent_time >= frequency:
                     # 일정주기가 지나면 센서 데이터를 전송
@@ -201,7 +215,7 @@ def read_and_send_sensor_data(frequency, plant_id):
                         "id": plant_id,
                         "moisture": current_moisture,
                         "temperature": current_temperature,
-                        "light": current_light,
+                        "light": current_light, 
                         "landMoisture": current_land_moisture
                     }
                     send_message(server, message)
