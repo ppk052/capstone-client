@@ -25,10 +25,11 @@ max_land_moisture_value = 1020
 min_land_moisture_value = 330
 pump_turn_time = 10
 fan_turn_time = 60
+led_turn_time = 10
 
 # 주기적으로 센서데이터 읽고 데이터값 보내는 함수
 def read_and_send_sensor_data(frequency, plant_id):
-    global pump_auto, LED_auto, fan_auto, appropriate_light, appropriate_moisture, appropriate_temperature, max_land_moisture_value, min_land_moisture_value, pump_turn_time, fan_turn_time, pump_auto, LED_auto, fan_auto
+    global pump_auto, LED_auto, fan_auto, appropriate_light, appropriate_moisture, appropriate_temperature, max_land_moisture_value, min_land_moisture_value, pump_turn_time, fan_turn_time, pump_auto, LED_auto, fan_auto, led_turn_time
     
     last_sent_time = time.time()  # 마지막 전송 시간 기록
     land_moisture_list = []
@@ -80,8 +81,8 @@ def read_and_send_sensor_data(frequency, plant_id):
                 local_time = time.localtime(current_time)
                 
                 #라이트
-                #라이트가 자동으로 켜지고 30분이 지나면 끄고나서 다시 LED 제어
-                if led_on_time and current_time - led_on_time>1800:
+                #라이트가 자동으로 켜지고 일정시간이 지나면 끄고나서 다시 LED 제어
+                if led_on_time and current_time - led_on_time>led_turn_time:
                     GPIO.output(led_switch,0)
                     message = {
                         "type": 3,
