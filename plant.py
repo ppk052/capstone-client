@@ -121,19 +121,6 @@ def read_and_send_sensor_data(frequency, plant_id):
                         send_message(server, message)
 
                 #팬
-                print("팬켜져있는가")
-                print(fan_on)
-                print("팬자동")
-                print(fan_auto)
-                print("경과시간")
-                print(current_time - fan_on_time)
-                print("켜야되나")
-                print(current_temperature > appropriate_temperature)
-                print("현재온도")
-                print(current_temperature)
-                print("적정온도")
-                print(appropriate_temperature)
-                
                 if fan_on:
                     if fan_auto and current_time - fan_on_time > fan_turn_time:
                         GPIO.output(fan_switch,0)
@@ -182,7 +169,7 @@ def read_and_send_sensor_data(frequency, plant_id):
                             "newState": False
                             }
                         send_message(server, message)
-                        if current_land_moisture > appropriate_moisture:
+                        if current_land_moisture < appropriate_moisture:
                             GPIO.output(pump_switch1,1)
                             GPIO.output(pump_switch2,0)
                             pump_on = True
