@@ -85,23 +85,8 @@ def read_and_send_sensor_data(frequency, plant_id):
 
                 #라이트
                 #라이트가 자동으로 켜지고 일정시간이 지나면 끄고나서 다시 LED 제어
-                print("LED on")
-                print(led_on)
-                print("LED 자동")
-                print(LED_auto)
-                print("현재시각")
-                print(local_time.tm_hour)
-                print("LED경과시각")
-                print(current_time - led_on_time)
-                print("LED켜야되나?")
-                print(current_light<appropriate_light)
-                print("현재밝기")
-                print(current_light)
-                print("적정밝기")
-                print(appropriate_light)
                 if led_on:
                     if LED_auto and current_time - led_on_time>led_turn_time:
-                        print("LED끄기")
                         GPIO.output(led_switch,0)
                         message = {
                             "type": 3,
@@ -112,7 +97,6 @@ def read_and_send_sensor_data(frequency, plant_id):
                         send_message(server, message)
                         led_on = False
                         if 6<local_time.tm_hour<20 and current_light < appropriate_light:
-                            print("LED켜기기")
                             GPIO.output(led_switch,1)
                             led_on = True
                             led_on_time = time.time()
@@ -137,27 +121,40 @@ def read_and_send_sensor_data(frequency, plant_id):
                         send_message(server, message)
 
                 #팬
-                if not fan_on or current_time - fan_on_time > fan_turn_time:
-                    GPIO.output(fan_switch,0)
-                    fan_on = False
-                    message = {
-                        "type": 3,
-                        "id": plant_id,
-                        "name": 'fan',
-                        "newState": False
-                        }
-                    send_message(server, message)
-                    if fan_auto and current_temperature > appropriate_temperature:
-                        GPIO.output(fan_switch,1)
-                        fan_on = True
-                        fan_on_time = time.time()
+                if fan_on:
+                    if fan_auto and current_time - fan_on_time > fan_turn_time:
+                        GPIO.output(fan_switch,0)
+                        fan_on = False
                         message = {
-                        "type": 3,
-                        "id": plant_id,
-                        "name": 'LED',
-                        "newState": True
-                        }
+                            "type": 3,
+                            "id": plant_id,
+                            "name": 'fan',
+                            "newState": False
+                            }
                         send_message(server, message)
+                        if current_temperature > appropriate_temperature:
+                            GPIO.output(fan_switch,1)
+                            fan_on = True
+                            fan_on_time = time.time()
+                            message = {
+                            "type": 3,
+                            "id": plant_id,
+                            "name": 'LED',
+                            "newState": True
+                            }
+                            send_message(server, message)
+                elif fan_auto:
+                    if current_temperature > appropriate_temperature:
+                            GPIO.output(fan_switch,1)
+                            fan_on = True
+                            fan_on_time = time.time()
+                            message = {
+                            "type": 3,
+                            "id": plant_id,
+                            "name": 'LED',
+                            "newState": True
+                            }
+                            send_message(server, message)
 
                 #펌프
                 if not pump_on or current_time - pump_on_time>pump_turn_time:
