@@ -94,6 +94,8 @@ def read_and_send_sensor_data(frequency, plant_id):
                 print(LED_auto)
                 print("현재시각")
                 print(local_time.tm_hour)
+                print("LED경과시각")
+                print(current_time - led_on_time)
                 print("LED켜야되나?")
                 print(current_light<appropriate_light)
                 print("현재밝기")
@@ -102,6 +104,7 @@ def read_and_send_sensor_data(frequency, plant_id):
                 print(appropriate_light)
                 if led_on:
                     if LED_auto and current_time - led_on_time>led_turn_time:
+                        print("LED끄기")
                         GPIO.output(led_switch,0)
                         message = {
                             "type": 3,
@@ -112,6 +115,7 @@ def read_and_send_sensor_data(frequency, plant_id):
                         send_message(server, message)
                         led_on = False
                         if 6<local_time.tm_hour<20 and current_light < appropriate_light:
+                            print("LED켜기기")
                             GPIO.output(led_switch,1)
                             led_on = True
                             led_on_time = time.time()
